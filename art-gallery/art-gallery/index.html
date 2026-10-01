@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Umělecká hádanka dne</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <canvas id="stars"></canvas>
+
+  <div class="app">
+    <header class="topbar">
+      <h1>🎨 Umělecká hádanka</h1>
+      <nav class="tabs">
+        <button class="tab-btn active" data-tab="discover">Objevuj</button>
+        <button class="tab-btn" data-tab="favorites">
+          ⭐ Oblíbené <span id="fav-count" class="badge">0</span>
+        </button>
+      </nav>
+    </header>
+
+    <!-- DISCOVER TAB -->
+    <section id="discover" class="tab-panel active">
+      <div class="card" id="main-card">
+        <div class="image-wrap" id="image-wrap">
+          <img id="main-image" src="" alt="Obraz" />
+          <div class="blur-overlay" id="blur-overlay">
+            <button id="reveal-btn" class="primary-btn">🎨 Odhalit obraz</button>
+          </div>
+          <div class="loading" id="loading">Načítám obraz…</div>
+        </div>
+
+        <div class="quiz" id="quiz-box">
+          <p class="quiz-question">Poznáš, o jaký slavný obraz jde?</p>
+          <div class="quiz-options" id="quiz-options"></div>
+        </div>
+
+        <div class="reveal-content hidden" id="reveal-content">
+          <div class="title-row">
+            <h2 id="image-title"></h2>
+            <span id="image-year" class="year-badge"></span>
+          </div>
+          <p class="hook" id="image-hook"></p>
+          <div class="fact-box">
+            <span class="fact-label">✨ Fun fact</span>
+            <p id="image-fact"></p>
+          </div>
+          <p class="explanation" id="image-explanation"></p>
+
+          <div class="actions">
+            <button id="fav-btn" class="icon-btn">🤍 Do oblíbených</button>
+            <button id="download-btn" class="icon-btn">⬇️ Stáhnout obrázek</button>
+            <button id="next-btn" class="primary-btn">➡️ Další obraz</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAVORITES TAB -->
+    <section id="favorites" class="tab-panel">
+      <h2 class="fav-heading">Tvoje knihovna oblíbených</h2>
+      <p id="empty-fav" class="empty-state">Zatím tu nic není. Přidej si první obraz v záložce „Objevuj“ 💫</p>
+      <div class="fav-grid" id="fav-grid"></div>
+    </section>
+
+    <!-- DETAIL MODAL -->
+    <div class="modal-backdrop hidden" id="modal-backdrop">
+      <div class="modal">
+        <button class="modal-close" id="modal-close">✕</button>
+        <img id="modal-image" src="" alt="" />
+        <div class="modal-body">
+          <div class="title-row">
+            <h2 id="modal-title"></h2>
+            <span id="modal-year" class="year-badge"></span>
+          </div>
+          <p class="hook" id="modal-hook"></p>
+          <div class="fact-box">
+            <span class="fact-label">✨ Fun fact</span>
+            <p id="modal-fact"></p>
+          </div>
+          <p class="explanation" id="modal-explanation"></p>
+          <div class="actions">
+            <button id="modal-download-btn" class="icon-btn">⬇️ Stáhnout obrázek</button>
+            <button id="modal-remove-btn" class="icon-btn danger">🗑️ Odebrat z oblíbených</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast hidden" id="toast"></div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
