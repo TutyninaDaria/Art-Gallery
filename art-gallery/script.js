@@ -83,6 +83,25 @@ async function fetchArtImage(wikiTitle) {
   return img;
 }
 
+// Předehřeje obrázek a vrátí jeho skutečné rozměry (potřebné, abychom mohli
+// nastavit kontejner na stejný poměr stran a obrázek se nemusel ořezávat).
+function preloadImage(url) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
+    img.onerror = () => reject(new Error("Obrázek se nepodařilo načíst"));
+    img.src = url;
+  });
+}
+
+// Nastaví poměr stran kontejneru podle skutečného obrázku. Extrémní poměry
+// (velmi široké panorama / velmi vysoký portrét) mírně omezíme, ať nerozbijí layout.
+function applyAspectRatio(wrapEl, width, height) {
+  if (!width || !height) return;
+  const ratio = Math.max(0.55, Math.min(1.9, width / height));
+  wrapEl.style.aspectRatio = String(ratio);
+}
+
 /* ---------- Stav appky ---------- */
 let currentItem = null;
 let currentImageUrl = null;
@@ -90,6 +109,7 @@ let revealed = false;
 let usedIds = [];
 
 const els = {
+  imageWrap: document.getElementById("image-wrap"),
   mainImage: document.getElementById("main-image"),
   blurOverlay: document.getElementById("blur-overlay"),
   revealBtn: document.getElementById("reveal-btn"),
@@ -154,6 +174,7 @@ async function loadNewItem() {
 
   els.mainImage.src = "";
   els.mainImage.classList.add("blurred");
+  els.imageWrap.style.aspectRatio = "4 / 3"; // reset na výchozí, než zjistíme skutečný poměr
   els.blurOverlay.classList.remove("hidden");
   els.quizBox.classList.remove("hidden");
   els.revealContent.classList.add("hidden");
@@ -164,6 +185,10 @@ async function loadNewItem() {
   try {
     const imgUrl = await fetchArtImage(currentItem.wikiTitle);
     if (myToken !== loadToken) return; // mezitím si uživatel vyžádal jiný obraz
+    const dims = await preloadImage(imgUrl);
+    if (myToken !== loadToken) return;
+
+    applyAspectRatio(els.imageWrap, dims.width, dims.height);
     currentImageUrl = imgUrl;
     els.mainImage.src = imgUrl;
   } catch (e) {
@@ -262,6 +287,7 @@ function renderFavorites() {
 /* ---------- Modal detailu ---------- */
 const modal = {
   backdrop: document.getElementById("modal-backdrop"),
+  imageWrap: document.querySelector(".modal-image-wrap"),
   image: document.getElementById("modal-image"),
   title: document.getElementById("modal-title"),
   year: document.getElementById("modal-year"),
@@ -275,8 +301,9 @@ const modal = {
 
 let modalItem = null;
 
-function openModal(item) {
+async function openModal(item) {
   modalItem = item;
+  modal.imageWrap.style.aspectRatio = "4 / 3";
   modal.image.src = item.imageUrl;
   modal.title.textContent = item.title;
   modal.year.textContent = item.year;
@@ -284,6 +311,13 @@ function openModal(item) {
   modal.fact.textContent = item.fact;
   modal.explanation.textContent = item.explanation;
   modal.backdrop.classList.remove("hidden");
+
+  try {
+    const dims = await preloadImage(item.imageUrl);
+    if (modalItem === item) applyAspectRatio(modal.imageWrap, dims.width, dims.height);
+  } catch (e) {
+    /* necháme výchozí poměr, pokud se nepodaří zjistit rozměry */
+  }
 }
 
 function closeModal() {

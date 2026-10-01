@@ -101,19 +101,27 @@ html, body {
   box-shadow: 0 10px 40px #00000066;
 }
 
+/* Obrázek se zobrazuje v PŮVODNÍM poměru stran (žádné ořezávání do čtverce).
+   aspect-ratio se dynamicky nastavuje přes JS podle skutečných rozměrů
+   načteného obrázku; hodnota 4/3 níže je jen výchozí stav před načtením. */
 .image-wrap {
   position: relative;
   width: 100%;
   aspect-ratio: 4 / 3;
+  max-height: 68vh;
   border-radius: 14px;
   overflow: hidden;
   background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: aspect-ratio 0.35s ease;
 }
 
 #main-image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
   transition: filter 0.6s ease, transform 0.6s ease;
 }
@@ -320,12 +328,25 @@ html, body {
   padding-bottom: 18px;
 }
 
-.modal img {
+/* Obrázek v modálu se také zobrazuje v původním poměru stran, bez ořezávání. */
+.modal-image-wrap {
   width: 100%;
-  max-height: 320px;
-  object-fit: cover;
-  display: block;
+  max-height: 50vh;
+  aspect-ratio: 4 / 3;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
   border-radius: 18px 18px 0 0;
+  transition: aspect-ratio 0.35s ease;
+}
+
+.modal-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .modal-body { padding: 16px 18px 0; }
